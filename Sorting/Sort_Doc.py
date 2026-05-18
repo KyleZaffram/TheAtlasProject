@@ -1,3 +1,16 @@
+DOCTOR_MAP = {
+    "MORELAND, DOUGLAS B, MD": "Moreland, Doug",
+    "FAHRBACK, JOHN, MD":      "Fahrback, John",
+    "LEVY, ELAD, MD":          "Levy, Elad",
+    "MEYERS, JOSHUA, MD":      "Meyers, Joshua",
+    "MULLIN, JEFFERY, MD":     "Mullin, Jeffery",
+    "POLLINA, JOHN, MD":       "Pollina, John",
+    "STOFFMAN, MICHAEL, MD":   "Stoffman, Michael",
+}
+
+# Then in sort_by_doctor(), when building the patient dict:
+"physician": DOCTOR_MAP.get(row["SB Doctor Name"], row["SB Doctor Name"])
+
 def sort_by_doctor(df):
 
     doctor_patients = {}
