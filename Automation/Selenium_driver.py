@@ -6,15 +6,14 @@ import time
 
 FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdSGzUG6vzwP3tzJoxXpIrYEv48MtZUcueEmFrBZzIWOgM6hg/viewform"
 
-# Paste your entry IDs here once you find them
-ENTRY_FIRST_NAME = "entry.XXXXXXXXX"
-ENTRY_LAST_NAME  = "entry.XXXXXXXXX"
-ENTRY_DOB        = "entry.XXXXXXXXX"
-ENTRY_SEX        = "entry.XXXXXXXXX"
-ENTRY_MRN        = "entry.XXXXXXXXX"
-ENTRY_EMAIL      = "entry.XXXXXXXXX"
-ENTRY_PHONE      = "entry.XXXXXXXXX"
-ENTRY_PHYSICIAN  = "entry.XXXXXXXXX"
+ENTRY_FIRST_NAME = "entry.369071062"
+ENTRY_LAST_NAME  = "entry.108580576"
+ENTRY_DOB        = "entry.1071432235"
+ENTRY_SEX        = "entry.108793413"
+ENTRY_MRN        = "entry.1457600634"
+ENTRY_EMAIL      = "entry.1162067483"
+ENTRY_PHONE      = "entry.1487571513"
+ENTRY_PHYSICIAN  = "entry.101874347"
 
 class Bot:
 
@@ -34,49 +33,51 @@ class Bot:
         # Last Name
         d.find_element(By.NAME, ENTRY_LAST_NAME).send_keys(patient["last_name"])
 
-        # Date of Birth — Google's date field has 3 separate boxes (MM / DD / YYYY)
-        dob = str(patient["DOB"])  # expects format like "03/28/1955"
+        # Date of Birth — 3 separate boxes (Month / Day / Year)
+        dob = str(patient["DOB"])
         parts = dob.split("/")
-        if len(parts) == 3:
-            dob_fields = d.find_elements(By.NAME, ENTRY_DOB)
-            dob_fields[0].send_keys(parts[0])  # MM
-            dob_fields[1].send_keys(parts[1])  # DD
-            dob_fields[2].send_keys(parts[2])  # YYYY
+        dob_fields = d.find_elements(By.NAME, ENTRY_DOB)
+        if len(parts) == 3 and len(dob_fields) >= 3:
+            dob_fields[0].send_keys(parts[0])  # Month
+            dob_fields[1].send_keys(parts[1])  # Day
+            dob_fields[2].send_keys(parts[2])  # Year
         else:
-            d.find_element(By.NAME, ENTRY_DOB).send_keys(dob)
+            dob_fields[0].send_keys(dob)
 
-        # Sex — radio button, click the matching label
-        # Options on your form: Male, Female, Unknown, Other
-        sex_value = patient.get("sex", "")
+        # Sex — radio button (options: Male, Female, Unkown)
+        # Note: your form has "Unkown" (typo) not "Unknown"
+        sex_map = {"M": "Male", "F": "Female", "U": "Unkown"}
+        sex_raw = str(patient.get("sex", "")).strip()
+        sex_value = sex_map.get(sex_raw, sex_raw)  # handles M/F or full word
         if sex_value:
             try:
                 d.find_element(By.XPATH, f"//span[text()='{sex_value}']").click()
-            except:
-                print(f"  Could not find sex option: {sex_value}")
+            except Exception:
+                print(f"  Warning: could not select sex '{sex_value}'")
 
         # MRN
         d.find_element(By.NAME, ENTRY_MRN).send_keys(str(patient["Act_Num"]))
 
         # Email
-        email = patient.get("email", "")
-        if email and str(email) != "nan":
-            d.find_element(By.NAME, ENTRY_EMAIL).send_keys(str(email))
+        email = str(patient.get("email", ""))
+        if email and email.lower() != "nan":
+            d.find_element(By.NAME, ENTRY_EMAIL).send_keys(email)
 
         # Cell Phone
-        phone = patient.get("phone", "")
-        if phone and str(phone) != "nan":
-            d.find_element(By.NAME, ENTRY_PHONE).send_keys(str(phone))
+        phone = str(patient.get("phone", ""))
+        if phone and phone.lower() != "nan":
+            d.find_element(By.NAME, ENTRY_PHONE).send_keys(phone)
 
-        # Physician dropdown
-        # Options: Fahrback John, Levy Elad, Meyers Joshua,
-        #          Moreland Doug, Mullin Jeffery, Pollina John, Stoffman Michael
+        # Physician — dropdown
+        # Options: Fahrback, John / Levy, Elad / Meyers, Joshua /
+        #          Moreland, Doug / Mullin, Jeffery / Pollina, John / Stoffman, Michael
         physician = patient.get("physician", "")
         try:
             d.find_element(By.XPATH, "//div[@role='listbox']").click()
             time.sleep(0.5)
             d.find_element(By.XPATH, f"//span[text()='{physician}']").click()
-        except:
-            print(f"  Could not select physician: {physician}")
+        except Exception:
+            print(f"  Warning: could not select physician '{physician}'")
 
         # Submit
         d.find_element(By.XPATH, "//span[text()='Submit']").click()
