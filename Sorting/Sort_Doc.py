@@ -22,13 +22,13 @@ def sort_by_doctor(df):
 
         patient = {
             "Act_Num":    safe("P Account Number"),
-            "first_name": safe("P First Name"),       # fixed from fname
-            "last_name":  safe("P Last Name"),        # fixed from lname
+            "fname": safe("P First Name"),       # fixed from fname
+            "lname":  safe("P Last Name"),        # fixed from lname
             "DOB":        safe("P Date of Birth"),
             "DOS":        safe("SB Appointment Date"),
             "Procedure":  safe("SB Surgical Code 1"),
             "Prod_xtra":  safe("SB Surgical Code 2"),
-            "phone":      safe("P Cell Phone Number"), # fixed from Phone
+            "Phone":      safe("P Cell Phone Number"), # fixed from Phone
             "email":      safe("P Email Address"),
             "physician":  DOCTOR_MAP.get(str(doctor).strip(), str(doctor).strip()),
         }

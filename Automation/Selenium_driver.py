@@ -15,6 +15,7 @@ ENTRY_EMAIL      = "entry.1162067483"
 ENTRY_PHONE      = "entry.1487571513"
 ENTRY_PHYSICIAN  = "entry.101874347"
 
+print("Bot initializing...")
 class Bot:
 
     def __init__(self):
@@ -22,16 +23,29 @@ class Bot:
         self.driver.get(FORM_URL)
         time.sleep(2)
 
+    print("Bot initialized and form loaded.")
     def fill_form(self, patient):
+        print(patient)
+
         d = self.driver
         wait = WebDriverWait(d, 10)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "form")))
 
         # First Name
-        d.find_element(By.NAME, ENTRY_FIRST_NAME).send_keys(patient["first_name"])
+        elements = d.find_elements(By.NAME, ENTRY_FIRST_NAME)
+
+        print("Found", len(elements), "elements")
+
+        for i, e in enumerate(elements):
+            print(
+                i,
+                "tag=", e.tag_name,
+                "displayed=", e.is_displayed(),
+                "enabled=", e.is_enabled()
+            )
 
         # Last Name
-        d.find_element(By.NAME, ENTRY_LAST_NAME).send_keys(patient["last_name"])
+        d.find_element(By.NAME, ENTRY_LAST_NAME).send_keys(patient.get("lname", ""))
 
         # Date of Birth — 3 separate boxes (Month / Day / Year)
         dob = str(patient["DOB"])
@@ -64,7 +78,7 @@ class Bot:
             d.find_element(By.NAME, ENTRY_EMAIL).send_keys(email)
 
         # Cell Phone
-        phone = str(patient.get("phone", ""))
+        phone = str(patient.get("Phone", ""))
         if phone and phone.lower() != "nan":
             d.find_element(By.NAME, ENTRY_PHONE).send_keys(phone)
 

@@ -1,5 +1,7 @@
 from Reader.Reader import load_excel
 from Sorting.Sort_Doc import sort_by_doctor
+from Automation.Selenium_driver import Bot
+from UI.Controller import Controller
 import pandas as pd
 
 # Load data
@@ -40,8 +42,14 @@ for doctor, patients in doctor_lists.items():
             print(f"{placement}.) {Act_Num} - {lname}, {fname} - {DOB} - {DOS} - {Procedure} with a {Prod_xtra} - {Phone} - {email}")
             print("")
 
+        print("Sending to bot...")
+        send_to_bot = Bot()
+        send_to_bot.fill_form(patient)
+        print("Patient sent to bot. Please click NEXT in the UI to proceed to the next patient.")
+
         patient_count += 1
         placement += 1
+        
         
     print("\n" + "=" * 50)
     print(f"Total patients for {doctor}: {len(patients)}")

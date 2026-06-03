@@ -15,5 +15,6 @@ def load_excel():
 
     # Load Excel file
     df = pd.read_excel(file_path)
+    print("File is being Read...")
 
     return df
